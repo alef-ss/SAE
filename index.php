@@ -82,7 +82,9 @@ html, body {
 }
 
 body {
-  background: linear-gradient(135deg, var(--color-bg) 0%, #FFF5F5 100%);
+  background: url(src/public/static/img/sakura.svg);
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,6 +97,8 @@ body {
   width: 100%;
   max-width: 450px;
   position: relative;
+  opacity: .8;
+  backdrop-filter: blur(10px);
   z-index: 1;
 }
 
@@ -102,25 +106,6 @@ body {
   position: relative;
 }
 
-/* Animated background gradient effect */
-.animated-bg {
-  position: absolute;
-  inset: -100px;
-  background: radial-gradient(circle at 30% 70%, rgba(255, 0, 0, 0.08) 0%, transparent 50%),
-              radial-gradient(circle at 70% 30%, rgba(255, 107, 91, 0.06) 0%, transparent 50%);
-  animation: float 20s ease-in-out infinite;
-  pointer-events: none;
-  z-index: -1;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(20px, -20px);
-  }
-}
 
 /* Login box with enhanced styling */
 .login-box {
@@ -132,20 +117,7 @@ body {
   position: relative;
   z-index: 2;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  animation: slideUp 0.6s var(--transition-smooth);
 }
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Logo section styling */
 .logo-section {
   text-align: center;
@@ -188,15 +160,6 @@ body {
   line-height: 1.5;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 /* Enhanced Google button with interactive states */
 .google-btn {
   display: flex;
@@ -205,7 +168,7 @@ body {
   gap: var(--spacing-sm);
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: var(--color-primary-dark);
   color: var(--color-white);
   border: none;
   border-radius: var(--radius-md);
@@ -213,31 +176,16 @@ body {
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: all var(--transition-smooth);
   box-shadow: 0 8px 16px rgba(255, 0, 0, 0.25);
   position: relative;
   overflow: hidden;
-  animation: fadeIn 0.8s var(--transition-smooth) 0.3s both;
-}
-
-.google-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.2);
-  transition: left var(--transition-fast);
+  transition: ease-in-out .2s;
 }
 
 .google-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  padding: 1.1rem;
   box-shadow: 0 16px 32px rgba(255, 0, 0, 0.35);
-}
-
-.google-btn:hover::before {
-  left: 100%;
 }
 
 .google-btn:active {
@@ -250,34 +198,14 @@ body {
 }
 
 .google-btn:hover .google-icon {
-  transform: scale(1.1);
+  transform: scale(1.5);
 }
 
 .btn-text {
   animation: slideInRight 0.8s var(--transition-smooth) 0.45s both;
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
 /* Helper text styling */
 .helper-text {
@@ -285,43 +213,6 @@ body {
   font-size: 0.875rem;
   color: var(--color-text-light);
   margin-top: var(--spacing-md);
-  animation: fadeIn 0.8s var(--transition-smooth) 0.5s both;
-}
-
-/* Decorative elements for visual appeal */
-.decoration {
-  position: absolute;
-  border-radius: var(--radius-full);
-  pointer-events: none;
-  opacity: 0.6;
-  animation: pulse 4s ease-in-out infinite;
-}
-
-.decoration-1 {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, rgba(255, 107, 91, 0.3) 0%, rgba(255, 138, 127, 0.1) 100%);
-  top: -50px;
-  right: -50px;
-  animation: pulse 6s ease-in-out infinite;
-}
-
-.decoration-2 {
-  width: 150px;
-  height: 150px;
-  background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 68, 68, 0.05) 100%);
-  bottom: -75px;
-  left: -75px;
-  animation: pulse 8s ease-in-out infinite 1s;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
 }
 
 /* Responsive design for mobile and tablet */
