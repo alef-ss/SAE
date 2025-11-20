@@ -5,7 +5,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $professor_id = 1;
     $periodo      = 1;
     $data         = $_POST['data'];
-                                                     // Ajuste 1: Se o input for de texto (e não type="date"), garanta que o formato seja Y-m-d (MySQL)
+    
+    // Ajuste 1: Se o input for de texto (e não type="date"), garanta que o formato seja Y-m-d (MySQL)
     $data_para_bd = date('Y-m-d', strtotime($data)); // Use a variável que será inserida
 
     $aulas_selecionadas = $_POST['aulas'] ?? [];

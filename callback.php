@@ -147,25 +147,28 @@ try {
     }
 
     // Salvar usuário no banco de dados (supondo que saveUser exista)
-        try {
-            $userId = saveUser(
-                $userInfo['id'],
-                $userInfo['name'] ?? null,
-                $userInfo['email'] ?? null,
-                $userInfo['picture'] ?? null
-            );
+    try {
+        $existing = findUserByGoogleId(['id']);
 
-            if (!$userId) {
-                sendErrorAndExit('Falha ao salvar usuário no banco', [
-                    'userinfo' => $userInfo
-                ]);
-            }
-        } catch (Exception $e) {
-            sendErrorAndExit('Erro ao conectar ao banco de dados', [
-                'error' => $e->getMessage(),
-                'userinfo' => $userInfo
-            ]);
+        if ($existing) {
+            updateLastLogin(['id']);
+            $userId = $existing['id'];
+        } else {
+            $_SESSION['pending_user'] = [
+                'google_id' => $userInfo['id'],
+                'name' => $userInfo['name'] ?? null,
+                'email' => $userInfo['email'] ?? null,
+                'picture' => $userInfo['picture']
+            ];
+
+            header("Location: escolher_turno.php");
         }
+    } catch (Exception $e) {
+        sendErrorAndExit('Erro no fluxo de verificação do usuário', [
+            'error' => $e->getMessage(),
+            'userinfo' => $userInfo
+        ]);
+    }
 
     // Salvar na sessão
     $_SESSION['user_id'] = $userId;

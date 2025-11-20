@@ -8,7 +8,7 @@ $_pdo_connection = null;
 function db()
 {
   global $_pdo_connection;
-  
+
   // Se já existe conexão válida, retorna
   if ($_pdo_connection !== null) {
     try {
@@ -18,11 +18,11 @@ function db()
       $_pdo_connection = null;
     }
   }
-  
+
   // Define timeout de conexão curto para evitar travamento
   $originalTimeout = ini_get('default_socket_timeout');
   ini_set('default_socket_timeout', 5); // 5 segundos de timeout
-  
+
   try {
     $_pdo_connection = new PDO(
       "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
@@ -38,11 +38,27 @@ function db()
   } catch (PDOException $e) {
     ini_set('default_socket_timeout', $originalTimeout);
     error_log("Erro ao conectar ao banco: " . $e->getMessage());
-    
+
     // Retorna erro sem tentar novamente (para não ultrapassar timeout)
     throw new Exception("Falha na conexão com o banco de dados: " . $e->getMessage());
   }
 }
+
+function findUserByGoogleId($googleId)
+{
+  global $pdo;
+  $stmt = $pdo->prepare("SELECT * FROM professores WHERE google_id = ?");
+  $stmt->execute([$googleId]);
+  return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function updateLastLogin($id)
+{
+  global $pdo;
+  $stmt = $pdo->prepare("UPDATE usuarios SET ultimo_login = NOW() WHERE id = ?");
+  return $stmt->execute([$id]);
+}
+
 
 function saveUser($googleId, $name, $email, $picture)
 {
@@ -68,7 +84,7 @@ function saveUser($googleId, $name, $email, $picture)
   $selectStmt = $pdo->prepare("SELECT id FROM professores WHERE google_id = :google_id");
   $selectStmt->execute([':google_id' => $googleId]);
   $result = $selectStmt->fetchColumn();
-  
+
   return $result ?: $pdo->lastInsertId();
 }
 
