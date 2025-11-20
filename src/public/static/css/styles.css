@@ -314,6 +314,162 @@ body {
   color: var(--text-dark);
 }
 
+/* SALAS */
+
+.sala-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.sala-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 2px solid var(--gray);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--white);
+}
+.sala-input {
+  display: none;
+}
+.sala-input:checked + .sala-label {
+  background-color: #0b8e5a;
+  color: var(--white); /* Para garantir que o texto fique legível */
+  border-color: #0b8e5a; /* Opcional: muda a borda para combinar */
+}
+.sala-label:hover {
+  border-color: var(--light-red);
+  background: #eb8333;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.sala-checkbox {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--gray);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.sala-checkbox:hover {
+  border-color: var(--primary-red);
+  background: #eb8333;
+}
+
+.sala-checkbox:checked {
+  background: linear-gradient(135deg, #0b8e5a, #0b8e5a);
+  border-color: #0b8e5a;
+  box-shadow: inset 0 0 0 2px var(--white);
+}
+
+.sala-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.sala-content i {
+  font-size: 1.5rem;
+  color: var(--primary-red);
+}
+
+.sala-name {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.sala-time {
+  font-size: 0.875rem;
+  color: var(--text-dark);
+}
+
+/* Container principal */
+/* Card */
+.quantidade-label {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 2px solid var(--gray);
+  border-radius: 10px;
+  background: var(--white);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.quantidade-label:hover {
+  border-color: var(--light-red);
+  background: var(--white); /* não briga com o stepper */
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Stepper "normal" */
+.quantidade-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Botões */
+.quant-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--gray);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--primary-red);
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.quant-btn:hover {
+  background: var(--primary-red);
+  color: var(--white);
+}
+
+/* Input */
+.quantidade-input {
+  width: 48px;
+  height: 34px;
+  border: 1px solid var(--gray);
+  border-radius: 6px;
+  background: var(--white);
+  text-align: center;
+  font-weight: 600;
+}
+
+.quantidade-input:focus {
+  outline: none;
+}
+
+/* Ícone + texto */
+.elemento-content {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.elemento-content i {
+  font-size: 1.5rem;
+  color: var(--primary-red);
+}
+
+.elemento-name {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
 /* ========== TURNOS GRID ========== */
 
 .turnos-grid {
