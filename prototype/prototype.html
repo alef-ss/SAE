@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Sistema de Reserva e Agendamento de Aparelhos Eletrônicos - Laboratórios e Equipamentos">
+  <meta name="keywords" content="reserva, agendamento, equipamentos, laboratório, tablet, notebook">
+  <meta name="author" content="TechReserva">
+  <meta name="theme-color" content="#16a34a">
+  <title>TechReserva - Sistema de Agendamento</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+  /* ===== CSS Variables ===== */
+  :root {
+    --primary: #16a34a;
+    --primary-hover: #15803d;
+    --primary-light: #dcfce7;
+    --primary-dark: #166534;
+
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #1e293b;
+
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+
+    --accent: #f0fdf4;
+    --accent-foreground: #166534;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    --ring: #16a34a;
+
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1rem;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --transition: all 0.2s ease;
+    --transition-slow: all 0.3s ease;
+  }
+
+  /* ===== Reset & Base ===== */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== Login Page ===== */
+  .login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-background {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    z-index: 0;
+  }
+
+  .login-background::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .login-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+  }
+
+  .login-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2rem;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    animation: slideUp 0.5s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .login-logo {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: var(--primary);
+  }
+
+  .login-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin-bottom: 0.5rem;
+  }
+
+  .login-subtitle {
+    color: var(--muted-foreground);
+    font-size: 0.938rem;
+    margin-bottom: 2rem;
+  }
+
+  .google-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.5rem;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .google-btn:hover {
+    background: var(--muted);
+    border-color: var(--muted-foreground);
+    transform: translateY(-1px);
+  }
+
+  .google-btn:active {
+    transform: translateY(0);
+  }
+
+  .login-terms {
+    margin-top: 1.5rem;
+    font-size: 0.813rem;
+    color: var(--muted-foreground);
+  }
+
+  .login-terms a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  .login-terms a:hover {
+    text-decoration: underline;
+  }
+
+  /* ===== Main App Layout ===== */
+  .main-app {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: var(--transition-slow);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+  }
+
+  .sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+
+  .sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .sidebar-close:hover {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    font-size: 0.938rem;
+    font-weight: 500;
+  }
+
+  .nav-item:hover {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  .nav-item.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .sidebar-footer {
+    padding: 1rem 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--muted-foreground);
+    font-size: 0.938rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .logout-btn:hover {
+    background: var(--destructive);
+    color: var(--destructive-foreground);
+  }
+
+  /* ===== Main Content ===== */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .menu-btn:hover {
+    background: var(--muted);
+  }
+
+  .header-title {
+    flex: 1;
+  }
+
+  .header-title h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .header-title p {
+    font-size: 0.813rem;
+    color: var(--muted-foreground);
+  }
+
+  .header-user {
+    display: flex;
+    align-items: center;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.938rem;
+  }
+
+  /* ===== Content ===== */
+  .content {
+    flex: 1;
+    padding: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ===== Form Sections ===== */
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-section {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-light);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 0.25rem;
+  }
+
+  .section-description {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  /* ===== Calendar ===== */
+  .calendar-container {
+    background: var(--muted);
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .calendar-month-year {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--foreground);
+  }
+
+  .calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: var(--card);
+    color: var(--foreground);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .calendar-nav:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .calendar-weekdays span {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    padding: 0.5rem 0;
+  }
+
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--card);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .calendar-day:hover:not(.disabled):not(.selected) {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .calendar-day.selected {
+    background: var(--primary);
+    color: white;
+  }
+
+  .calendar-day.today {
+    border: 2px solid var(--primary);
+  }
+
+  .calendar-day.disabled {
+    color: var(--muted-foreground);
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .calendar-day.empty {
+    background: transparent;
+    cursor: default;
+  }
+
+  .selected-date-display {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--primary-light);
+    border-radius: var(--radius-sm);
+    color: var(--primary-dark);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* ===== Equipment Options ===== */
+  .equipment-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .equipment-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .equipment-card {
+    cursor: pointer;
+  }
+
+  .equipment-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: var(--muted);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    transition: var(--transition);
+  }
+
+  .equipment-card input:checked+.equipment-card-content {
+    background: var(--primary-light);
+    border-color: var(--primary);
+  }
+
+  .equipment-card:hover .equipment-card-content {
+    border-color: var(--primary);
+  }
+
+  .equipment-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--card);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .equipment-name {
+    font-weight: 600;
+    font-size: 0.938rem;
+    color: var(--foreground);
+    margin-bottom: 0.25rem;
+  }
+
+  .equipment-desc {
+    font-size: 0.813rem;
+    color: var(--muted-foreground);
+  }
+
+  /* ===== Sub Options ===== */
+  .sub-options {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .sub-options-title {
+    font-size: 0.938rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+  }
+
+  /* ===== Room Options ===== */
+  .room-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .room-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .room-card {
+    cursor: pointer;
+  }
+
+  .room-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: var(--muted);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    transition: var(--transition);
+  }
+
+  .room-card input:checked+.room-card-content {
+    background: var(--primary-light);
+    border-color: var(--primary);
+  }
+
+  .room-card:hover .room-card-content {
+    border-color: var(--primary);
+  }
+
+  .room-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .room-label {
+    font-size: 0.813rem;
+    color: var(--muted-foreground);
+  }
+
+  /* ===== Device Options ===== */
+  .device-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .device-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .device-card {
+    cursor: pointer;
+  }
+
+  .device-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1rem;
+    background: var(--muted);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    color: var(--muted-foreground);
+  }
+
+  .device-card input:checked+.device-card-content {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .device-card:hover .device-card-content {
+    border-color: var(--primary);
+  }
+
+  .device-card-content span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: var(--foreground);
+  }
+
+  /* ===== Quantity ===== */
+  .quantity-container {
+    margin-top: 1rem;
+    animation: slideDown 0.3s ease;
+  }
+
+  .quantity-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+    margin-bottom: 0.75rem;
+  }
+
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .quantity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--border);
+    background: var(--card);
+    color: var(--foreground);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .quantity-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+
+  .quantity-input {
+    width: 80px;
+    height: 44px;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    color: var(--foreground);
+  }
+
+  /* ===== Shift Options ===== */
+  .shift-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .shift-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .shift-card {
+    cursor: pointer;
+  }
+
+  .shift-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.25rem 0.75rem;
+    background: var(--muted);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    color: var(--muted-foreground);
+  }
+
+  .shift-card input:checked+.shift-card-content {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .shift-card:hover .shift-card-content {
+    border-color: var(--primary);
+  }
+
+  .shift-name {
+    font-weight: 600;
+    font-size: 0.938rem;
+    color: var(--foreground);
+    margin-top: 0.5rem;
+  }
+
+  .shift-time {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+  }
+
+  /* ===== Class Options ===== */
+  .class-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .class-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .class-card {
+    cursor: pointer;
+  }
+
+  .class-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: var(--muted);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    transition: var(--transition);
+  }
+
+  .class-card input:checked+.class-card-content {
+    background: var(--primary-light);
+    border-color: var(--primary);
+  }
+
+  .class-card:hover .class-card-content {
+    border-color: var(--primary);
+  }
+
+  .class-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .class-label {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  /* ===== Form Actions ===== */
+  .form-actions {
+    padding-top: 0.5rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--primary);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .submit-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    padding: 1.25rem 1.5rem;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .footer p {
+    font-size: 0.813rem;
+    color: var(--muted-foreground);
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--card);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    transform: translateY(150%);
+    opacity: 0;
+    transition: var(--transition-slow);
+    max-width: 400px;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .toast-content {
+    flex: 1;
+  }
+
+  .toast-title {
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 0.25rem;
+  }
+
+  .toast-message {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  .toast-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+
+  .toast-close:hover {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  /* ===== Responsive ===== */
+  @media (min-width: 768px) {
+    .sidebar {
+      transform: translateX(0);
+      position: relative;
+      width: 280px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-close {
+      display: none;
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
+
+    .menu-btn {
+      display: none;
+    }
+
+    .content {
+      padding: 2rem;
+    }
+
+    .form-section {
+      padding: 2rem;
+    }
+
+    .class-options {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .equipment-options {
+      grid-template-columns: 1fr;
+    }
+
+    .shift-options {
+      grid-template-columns: 1fr;
+    }
+
+    .room-options {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .class-options {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .login-card {
+      padding: 2rem 1.5rem;
+    }
+
+    .toast {
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
+    }
+  }
+</style>
+
+<body>
+  <!-- Login Page -->
+  <div id="login-page" class="login-page">
+    <div class="login-background"></div>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <h1 class="login-title">TechReserva</h1>
+        <p class="login-subtitle">Sistema de Agendamento de Equipamentos</p>
+        <button class="google-btn" onclick="handleLogin()">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+            <path fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          </svg>
+          <span>Entrar com Google</span>
+        </button>
+        <p class="login-terms">Ao entrar, você concorda com nossos <a href="#">Termos de Uso</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="main-app" class="main-app hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span>TechReserva</span>
+        </div>
+        <button class="sidebar-close" onclick="toggleSidebar()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>Novo Agendamento</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Meus Relatórios</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Relatórios Globais</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span>Equipamentos</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Usuários</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+          <span>Configurações</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="handleLogout()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Sair</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <button class="menu-btn" onclick="toggleSidebar()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <div class="header-title">
+          <h1>Novo Agendamento</h1>
+          <p>Reserve equipamentos para suas aulas</p>
+        </div>
+        <div class="header-user">
+          <div class="user-avatar">
+            <span id="user-initials">U</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="content">
+        <form id="booking-form" class="booking-form">
+          <!-- Date Selection -->
+          <section class="form-section">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+              <div>
+                <h2 class="section-title">Selecione a Data</h2>
+                <p class="section-description">Escolha o dia para seu agendamento</p>
+              </div>
+            </div>
+            <div class="calendar-container">
+              <div class="calendar-header">
+                <button type="button" class="calendar-nav" onclick="changeMonth(-1)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <span id="calendar-month-year" class="calendar-month-year"></span>
+                <button type="button" class="calendar-nav" onclick="changeMonth(1)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+              <div class="calendar-weekdays">
+                <span>Dom</span>
+                <span>Seg</span>
+                <span>Ter</span>
+                <span>Qua</span>
+                <span>Qui</span>
+                <span>Sex</span>
+                <span>Sáb</span>
+              </div>
+              <div id="calendar-days" class="calendar-days"></div>
+            </div>
+            <p id="selected-date-display" class="selected-date-display"></p>
+          </section>
+
+          <!-- Equipment Selection -->
+          <section class="form-section">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+              </div>
+              <div>
+                <h2 class="section-title">Tipo de Equipamento</h2>
+                <p class="section-description">Selecione o tipo de recurso desejado</p>
+              </div>
+            </div>
+            <div class="equipment-options">
+              <label class="equipment-card">
+                <input type="radio" name="equipment-type" value="lab" onchange="handleEquipmentChange('lab')">
+                <div class="equipment-card-content">
+                  <div class="equipment-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                  <span class="equipment-name">Laboratório de Informática</span>
+                  <span class="equipment-desc">Salas com computadores</span>
+                </div>
+              </label>
+              <label class="equipment-card">
+                <input type="radio" name="equipment-type" value="guardian" onchange="handleEquipmentChange('guardian')">
+                <div class="equipment-card-content">
+                  <div class="equipment-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                  </div>
+                  <span class="equipment-name">Guardião</span>
+                  <span class="equipment-desc">Tablets e Notebooks</span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Lab Rooms -->
+            <div id="lab-options" class="sub-options hidden">
+              <h3 class="sub-options-title">Selecione a Sala</h3>
+              <div class="room-options">
+                <label class="room-card">
+                  <input type="radio" name="lab-room" value="sala-01">
+                  <div class="room-card-content">
+                    <span class="room-number">01</span>
+                    <span class="room-label">Sala 01</span>
+                  </div>
+                </label>
+                <label class="room-card">
+                  <input type="radio" name="lab-room" value="sala-02">
+                  <div class="room-card-content">
+                    <span class="room-number">02</span>
+                    <span class="room-label">Sala 02</span>
+                  </div>
+                </label>
+                <label class="room-card">
+                  <input type="radio" name="lab-room" value="sala-03">
+                  <div class="room-card-content">
+                    <span class="room-number">03</span>
+                    <span class="room-label">Sala 03</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Guardian Options -->
+            <div id="guardian-options" class="sub-options hidden">
+              <h3 class="sub-options-title">Selecione o Dispositivo</h3>
+              <div class="device-options">
+                <label class="device-card">
+                  <input type="radio" name="device-type" value="tablet" onchange="showQuantityInput()">
+                  <div class="device-card-content">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                    <span>Tablet</span>
+                  </div>
+                </label>
+                <label class="device-card">
+                  <input type="radio" name="device-type" value="notebook" onchange="showQuantityInput()">
+                  <div class="device-card-content">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 19h16"></path>
+                      <path d="M5 7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7z"></path>
+                    </svg>
+                    <span>Notebook</span>
+                  </div>
+                </label>
+              </div>
+              <div id="quantity-input" class="quantity-container hidden">
+                <label class="quantity-label">Quantidade desejada</label>
+                <div class="quantity-controls">
+                  <button type="button" class="quantity-btn" onclick="changeQuantity(-1)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  </button>
+                  <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="40" readonly>
+                  <button type="button" class="quantity-btn" onclick="changeQuantity(1)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Shift Selection -->
+          <section class="form-section">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div>
+                <h2 class="section-title">Turno</h2>
+                <p class="section-description">Selecione o período do dia</p>
+              </div>
+            </div>
+            <div class="shift-options">
+              <label class="shift-card">
+                <input type="radio" name="shift" value="manha">
+                <div class="shift-card-content">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                  <span class="shift-name">Manhã</span>
+                  <span class="shift-time">07:00 - 12:00</span>
+                </div>
+              </label>
+              <label class="shift-card">
+                <input type="radio" name="shift" value="tarde">
+                <div class="shift-card-content">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <path
+                      d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42">
+                    </path>
+                  </svg>
+                  <span class="shift-name">Tarde</span>
+                  <span class="shift-time">13:00 - 18:00</span>
+                </div>
+              </label>
+              <label class="shift-card">
+                <input type="radio" name="shift" value="noite">
+                <div class="shift-card-content">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  </svg>
+                  <span class="shift-name">Noite</span>
+                  <span class="shift-time">19:00 - 22:00</span>
+                </div>
+              </label>
+            </div>
+          </section>
+
+          <!-- Class Selection -->
+          <section class="form-section">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="section-title">Aulas</h2>
+                <p class="section-description">Selecione uma ou mais aulas</p>
+              </div>
+            </div>
+            <div class="class-options">
+              <label class="class-card">
+                <input type="checkbox" name="class" value="1">
+                <div class="class-card-content">
+                  <span class="class-number">1ª</span>
+                  <span class="class-label">Aula</span>
+                </div>
+              </label>
+              <label class="class-card">
+                <input type="checkbox" name="class" value="2">
+                <div class="class-card-content">
+                  <span class="class-number">2ª</span>
+                  <span class="class-label">Aula</span>
+                </div>
+              </label>
+              <label class="class-card">
+                <input type="checkbox" name="class" value="3">
+                <div class="class-card-content">
+                  <span class="class-number">3ª</span>
+                  <span class="class-label">Aula</span>
+                </div>
+              </label>
+              <label class="class-card">
+                <input type="checkbox" name="class" value="4">
+                <div class="class-card-content">
+                  <span class="class-number">4ª</span>
+                  <span class="class-label">Aula</span>
+                </div>
+              </label>
+              <label class="class-card">
+                <input type="checkbox" name="class" value="5">
+                <div class="class-card-content">
+                  <span class="class-number">5ª</span>
+                  <span class="class-label">Aula</span>
+                </div>
+              </label>
+              <label class="class-card">
+                <input type="checkbox" name="class" value="6">
+                <div class="class-card-content">
+                  <span class="class-number">6ª</span>
+                  <span class="class-label">Aula</span>
+                </div>
+              </label>
+            </div>
+          </section>
+
+          <!-- Submit Button -->
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Confirmar Agendamento</span>
+            </button>
+          </div>
+        </form>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>&copy; 2025 TechReserva. Todos os direitos reservados.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <div class="toast-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <div class="toast-content">
+      <p class="toast-title">Agendamento Realizado!</p>
+      <p class="toast-message" id="toast-message"></p>
+    </div>
+    <button class="toast-close" onclick="hideToast()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    // ===== State Management =====
+    const currentDate = new Date()
+    let selectedDate = null
+
+    // ===== Login Handling =====
+    function handleLogin() {
+      const loginPage = document.getElementById("login-page")
+      const mainApp = document.getElementById("main-app")
+
+      // Simulate login animation
+      loginPage.style.opacity = "0"
+      loginPage.style.transform = "scale(0.95)"
+
+      setTimeout(() => {
+        loginPage.classList.add("hidden")
+        mainApp.classList.remove("hidden")
+        mainApp.style.opacity = "0"
+
+        setTimeout(() => {
+          mainApp.style.transition = "opacity 0.3s ease"
+          mainApp.style.opacity = "1"
+          initCalendar()
+        }, 50)
+      }, 300)
+    }
+
+    function handleLogout() {
+      const loginPage = document.getElementById("login-page")
+      const mainApp = document.getElementById("main-app")
+
+      mainApp.style.opacity = "0"
+
+      setTimeout(() => {
+        mainApp.classList.add("hidden")
+        loginPage.classList.remove("hidden")
+        loginPage.style.opacity = "1"
+        loginPage.style.transform = "scale(1)"
+
+        // Reset form
+        document.getElementById("booking-form").reset()
+        document.getElementById("lab-options").classList.add("hidden")
+        document.getElementById("guardian-options").classList.add("hidden")
+        document.getElementById("quantity-input").classList.add("hidden")
+        selectedDate = null
+        updateSelectedDateDisplay()
+      }, 300)
+    }
+
+    // ===== Sidebar Toggle =====
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar")
+      const overlay = document.getElementById("sidebar-overlay")
+
+      sidebar.classList.toggle("open")
+      overlay.classList.toggle("open")
+    }
+
+    // ===== Calendar Functions =====
+    function initCalendar() {
+      renderCalendar()
+    }
+
+    function renderCalendar() {
+      const monthYearEl = document.getElementById("calendar-month-year")
+      const daysContainer = document.getElementById("calendar-days")
+
+      const months = [
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+      ]
+
+      const year = currentDate.getFullYear()
+      const month = currentDate.getMonth()
+
+      monthYearEl.textContent = `${months[month]} ${year}`
+
+      const firstDay = new Date(year, month, 1).getDay()
+      const daysInMonth = new Date(year, month + 1, 0).getDate()
+      const today = new Date()
+
+      let html = ""
+
+      // Empty cells for days before first day of month
+      for (let i = 0; i < firstDay; i++) {
+        html += '<button type="button" class="calendar-day empty" disabled></button>'
+      }
+
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day)
+        const isToday = date.toDateString() === today.toDateString()
+        const isPast = date < today && !isToday
+        const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString()
+
+        let classes = "calendar-day"
+        if (isToday) classes += " today"
+        if (isPast) classes += " disabled"
+        if (isSelected) classes += " selected"
+
+        html += `<button type="button" class="${classes}" 
+                    ${isPast ? "disabled" : ""} 
+                    onclick="selectDate(${year}, ${month}, ${day})">${day}</button>`
+      }
+
+      daysContainer.innerHTML = html
+    }
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta)
+      renderCalendar()
+    }
+
+    function selectDate(year, month, day) {
+      selectedDate = new Date(year, month, day)
+      renderCalendar()
+      updateSelectedDateDisplay()
+    }
+
+    function updateSelectedDateDisplay() {
+      const display = document.getElementById("selected-date-display")
+
+      if (selectedDate) {
+        const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+        display.textContent = `Data selecionada: ${selectedDate.toLocaleDateString("pt-BR", options)}`
+        display.style.display = "block"
+      } else {
+        display.style.display = "none"
+      }
+    }
+
+    // ===== Equipment Handling =====
+    function handleEquipmentChange(type) {
+      const labOptions = document.getElementById("lab-options")
+      const guardianOptions = document.getElementById("guardian-options")
+
+      if (type === "lab") {
+        labOptions.classList.remove("hidden")
+        guardianOptions.classList.add("hidden")
+        document.getElementById("quantity-input").classList.add("hidden")
+
+        // Clear guardian selections
+        const deviceInputs = document.querySelectorAll('input[name="device-type"]')
+        deviceInputs.forEach((input) => (input.checked = false))
+      } else if (type === "guardian") {
+        labOptions.classList.add("hidden")
+        guardianOptions.classList.remove("hidden")
+
+        // Clear lab selections
+        const roomInputs = document.querySelectorAll('input[name="lab-room"]')
+        roomInputs.forEach((input) => (input.checked = false))
+      }
+    }
+
+    function showQuantityInput() {
+      const quantityInput = document.getElementById("quantity-input")
+      quantityInput.classList.remove("hidden")
+    }
+
+    function changeQuantity(delta) {
+      const input = document.getElementById("quantity")
+      let value = Number.parseInt(input.value) + delta
+      value = Math.max(1, Math.min(40, value))
+      input.value = value
+    }
+
+    // ===== Toast Notifications =====
+    function showToast(message) {
+      const toast = document.getElementById("toast")
+      const toastMessage = document.getElementById("toast-message")
+
+      toastMessage.textContent = message
+      toast.classList.add("show")
+
+      setTimeout(() => {
+        hideToast()
+      }, 5000)
+    }
+
+    function hideToast() {
+      const toast = document.getElementById("toast")
+      toast.classList.remove("show")
+    }
+
+    // ===== Form Submission =====
+    document.getElementById("booking-form").addEventListener("submit", (e) => {
+      e.preventDefault()
+
+      // Validate date
+      if (!selectedDate) {
+        alert("Por favor, selecione uma data.")
+        return
+      }
+
+      // Get form data
+      const equipmentType = document.querySelector('input[name="equipment-type"]:checked')
+      const shift = document.querySelector('input[name="shift"]:checked')
+      const classes = document.querySelectorAll('input[name="class"]:checked')
+
+      if (!equipmentType) {
+        alert("Por favor, selecione um tipo de equipamento.")
+        return
+      }
+
+      if (!shift) {
+        alert("Por favor, selecione um turno.")
+        return
+      }
+
+      if (classes.length === 0) {
+        alert("Por favor, selecione pelo menos uma aula.")
+        return
+      }
+
+      // Validate equipment-specific options
+      if (equipmentType.value === "lab") {
+        const room = document.querySelector('input[name="lab-room"]:checked')
+        if (!room) {
+          alert("Por favor, selecione uma sala.")
+          return
+        }
+      } else if (equipmentType.value === "guardian") {
+        const device = document.querySelector('input[name="device-type"]:checked')
+        if (!device) {
+          alert("Por favor, selecione um dispositivo.")
+          return
+        }
+      }
+
+      // Build success message
+      const dateStr = selectedDate.toLocaleDateString("pt-BR")
+      const shiftNames = { manha: "Manhã", tarde: "Tarde", noite: "Noite" }
+      const classNumbers = Array.from(classes)
+        .map((c) => c.value)
+        .join(", ")
+
+      let equipmentStr = ""
+      if (equipmentType.value === "lab") {
+        const room = document.querySelector('input[name="lab-room"]:checked')
+        equipmentStr = `Laboratório - ${room.value.replace("-", " ").toUpperCase()}`
+      } else {
+        const device = document.querySelector('input[name="device-type"]:checked')
+        const quantity = document.getElementById("quantity").value
+        equipmentStr = `${quantity}x ${device.value.charAt(0).toUpperCase() + device.value.slice(1)}`
+      }
+
+      const message = `${equipmentStr} • ${dateStr} • ${shiftNames[shift.value]} • Aulas: ${classNumbers}`
+
+      showToast(message)
+
+      // Optionally reset form
+      // this.reset();
+    })
+
+    // ===== Initialize =====
+    document.addEventListener("DOMContentLoaded", () => {
+      // Add transition styles to login page
+      const loginPage = document.getElementById("login-page")
+      loginPage.style.transition = "opacity 0.3s ease, transform 0.3s ease"
+
+      // Initialize calendar if on main page (for development)
+      // initCalendar();
+    })
+
+  </script>
+</body>
+
+</html>
